@@ -1,0 +1,172 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background-color: #ffffff;
+}
+
+/* Main container split 50–50 */
+.container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+/* 🟦 Left Side (Form Section) */
+.register-section {
+  flex: 1;
+  width: 50%;
+  background-color: #4a68d8;
+  color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.register-box {
+  width: 85%;
+  max-width: 420px;
+}
+
+.register-box h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.register-box p {
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+/* Input fields */
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-group label {
+  font-size: 14px;
+  color: #ffffff;   /* ✅ Fix: ensure label text is visible on blue background */
+  display: block;
+  margin-bottom: 6px;
+}
+
+.input-group input,
+.input-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 15px;
+}
+
+/* Radio buttons */
+.radio-group {
+  margin-bottom: 20px;
+}
+
+.radio-group label {
+  font-size: 14px;
+  color: #ffffff;
+  margin-right: 15px;
+}
+
+/* Button */
+.btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #2f49a6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #243a89;
+}
+
+/* Footer link */
+.link {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.link a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* ⚪ Right Side (Illustration Section) */
+.illustration {
+  flex: 1;
+  width: 50%;
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.illustration img {
+  width: 80%;
+  max-width: 500px;
+  height: auto;
+  object-fit: contain;
+}
+.input-group label {
+  font-size: 14px;
+  color: #000;  /* ✅ This makes label text visible on blue background */
+  display: block;
+  margin-bottom: 6px;
+}
+.radio-group label{
+    color: #000; 
+
+}
+.input-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd;        /* ✅ adds a subtle border */
+  background-color: #ffffff;     /* ✅ makes it stand out on blue bg */
+  outline: none;
+  font-size: 15px;
+  color: #333;
+}
+.input-group input:focus,
+.input-group select:focus {
+  border-color: #2f49a6; /* blue border highlight */
+  box-shadow: 0 0 4px rgba(47, 73, 166, 0.3);
+}
+
+
+/* 📱 Responsive - Mobile View */
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .illustration {
+    display: none;
+  }
+
+  .register-section {
+    width: 100%;
+    height: auto;
+    padding: 60px 30px;
+  }
+}

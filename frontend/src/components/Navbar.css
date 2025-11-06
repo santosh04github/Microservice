@@ -1,0 +1,29 @@
+.navbar {
+  background-color: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.navbar h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #2f49a6;
+}
+
+.navbar button {
+  background-color: #4a68d8;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.navbar button:hover {
+  background-color: #2f49a6;
+}
