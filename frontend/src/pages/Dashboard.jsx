@@ -1,53 +1,73 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import "./Dashboard.css";
-// import property1 from "../assets/property1.jpg";
-// import property2 from "../assets/property2.jpg";
 import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 
 const Dashboard = () => {
- 
+  const [properties, setProperties] = useState([]);
+  const [error, setError] = useState("");
+   const userData = JSON.parse(localStorage.getItem("user"));
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          setError("Please login first!");
+          window.location.href = "/";
+          return;
+        }
+
+        const res = await axios.get("http://localhost:5000/api/properties", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log(res.data);
+
+        setProperties(res.data || []);
+      } catch (err) {
+        console.error("Error fetching properties:", err);
+        setError("Failed to load property data");
+      }
+    };
+
+    fetchProperties();
+  }, []);
 
   return (
     <div className="dashboard-container">
       {/* Sidebar */}
-    
-        <Sidebar />
+      <Sidebar />
+
       {/* Main Content */}
       <div className="main-content">
         {/* Navbar */}
-          <Navbar title="Property Details" />
-
+       <Navbar title={`Welcome, ${userData?.name || "User"}`} />
         {/* Dashboard Body */}
         <div className="content">
           <h2>Dashboard Overview</h2>
-          <p>You have 3 active property listings.</p>
 
-          <div className="property-grid">
-            <div className="property-card">
-              <img src="" alt="Indore Property" />
-              <div className="property-info">
-                <h4>Indore</h4>
-                <p>3 BHK Flat - ₹55L</p>
-              </div>
-            </div>
+          {error && <p className="error">{error}</p>}
 
-            <div className="property-card">
-              <img src="" alt="Pune Property" />
-              <div className="property-info">
-                <h4>Pune</h4>
-                <p>2 BHK Apartment - ₹42L</p>
-              </div>
+          {properties.length > 0 ? (
+            <div className="property-grid">
+              {properties.map((p) => (
+                <div className="property-card" key={p.id}>
+                  <img
+                    src={`https://saanscalable.s3.amazonaws.com/${p.photo}`}
+                    alt={p.area}
+                  />
+                  <div className="property-info">
+                    <h4>{p.area}</h4>
+                    <p>{p.details} - ₹{p.price}</p>
+                  </div>
+                </div>
+              ))}
             </div>
-
-            <div className="property-card">
-              <img src="" alt="Delhi Property" />
-              <div className="property-info">
-                <h4>Delhi</h4>
-                <p>4 BHK Villa - ₹1.2Cr</p>
-              </div>
-            </div>
-          </div>
+          ) : (
+            !error && <p>Loading your property listings...</p>
+          )}
         </div>
       </div>
     </div>

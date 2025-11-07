@@ -5,13 +5,18 @@ import connectDB from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import propertyRoutes from "./routes/propertyRoutes.js";
+import cityRoutes from "./routes/cityRoutes.js";
+
+
 
 dotenv.config();
 const app = express();
 
 app.use(cors());
-app.use(express.json()); // <-- parses JSON body
-app.use(express.urlencoded({ extended: true })); // for form data
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
+
+// app.use(express.urlencoded({ extended: true })); // for form data
 // Database connect
 let db;
 const startServer = async () => {
@@ -22,6 +27,7 @@ const startServer = async () => {
     await connectDB();
 
     app.use("/api/auth", authRoutes);
+    app.use("/api/cities", cityRoutes);
   app.use(express.json({ limit: "10mb" })); 
   console.log("Express JSON middleware loaded");
     app.use("/api/properties", propertyRoutes);

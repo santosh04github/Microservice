@@ -7,6 +7,7 @@ import AddProperty from "./pages/AddProperty";
 import Listings from "./pages/Listings";
 import MyProfile from "./pages/MyProfile";
 import PropertyDetails from "./pages/PropertyDetails";
+import ProtectedRoute from "./components/ProtectedRoute"; 
 
 function App() {
   return (
@@ -14,11 +15,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/add-property" element={<AddProperty />} />
-        <Route path="/listings" element={<Listings />} />
-        <Route path="/settings" element={<MyProfile />} />
-         <Route path="/property/:area" element={<PropertyDetails />} />
+        <Route path="/dashboard" element={<ProtectedRoute element={Dashboard} />} />
+        <Route path="/add-property" element={<ProtectedRoute element={AddProperty} />} />
+        <Route path="/listings" element={<ProtectedRoute element={Listings} />} />
+        <Route path="/settings" element={<ProtectedRoute element={MyProfile} />} />
+        <Route path="/property/:id" element={<ProtectedRoute element={PropertyDetails} />} />
       </Routes>
     </Router>
   );

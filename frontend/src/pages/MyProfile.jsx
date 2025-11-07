@@ -1,88 +1,106 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MyProfile.css";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import Sidebar from "../components/Sidebar";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 
+
 const MyProfile = () => {
-  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
   const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
+  useEffect(() => {
+    const storedUser =
+      JSON.parse(sessionStorage.getItem("user")) ||
+      JSON.parse(localStorage.getItem("user"));
+    setUser(storedUser);
+  }, []);
+
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (form.newPassword !== form.confirmPassword) {
+      alert("New passwords do not match!");
+      return;
+    }
+
     try {
-      await axios.put("http://localhost:5000/api/user/settings", form);
-      alert("✅ Settings updated successfully!");
+      const res = await axios.post("http://localhost:5000/api/auth/change-password", {
+        userId: user.id,
+        currentPassword: form.currentPassword,
+        newPassword: form.newPassword,
+      });
+
+      alert(res.data.message);
+      setForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
-      console.error(err);
-      alert("❌ Failed to update settings");
+      alert( (err.response?.data?.error || "Failed to change password"));
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    navigate("/");
-  };
+  if (!user) return <p>Loading...</p>;
 
   return (
     <div className="dashboard-container">
-      {/* Sidebar */}
-     
-     <Sidebar />
+      <Sidebar />
 
-      {/* Main Content */}
       <div className="main-content">
-         <Navbar title="Property Details" />
-        
+         <Navbar title="Change Password" />
+       
 
         <div className="content">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="change-password-form">
             <div className="input-group">
-              <label>Name</label>
-              <input
-                type="text"
-                name="name"
-                placeholder="Enter your name"
-                value={form.name}
-                onChange={handleChange}
-                required
-              />
+              <label>Full Name</label>
+              <input type="text" value={user.name} disabled />
             </div>
 
             <div className="input-group">
-              <label>Email</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                value={form.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="input-group">
-              <label>Change Password</label>
+              <label>Current Password</label>
               <input
                 type="password"
-                name="password"
-                placeholder="New password"
-                value={form.password}
+                name="currentPassword"
+                placeholder="Enter current password"
+                value={form.currentPassword}
                 onChange={handleChange}
+                required
               />
             </div>
 
-            <button type="submit" className="btn">Save Changes</button>
+            <div className="input-group">
+              <label>New Password</label>
+              <input
+                type="password"
+                name="newPassword"
+                placeholder="Enter new password"
+                value={form.newPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label>Confirm New Password</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Re-enter new password"
+                value={form.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn">Update Password</button>
           </form>
         </div>
       </div>

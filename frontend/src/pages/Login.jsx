@@ -31,7 +31,8 @@ const Login = () => {
       // ✅ Store JWT token
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
-        alert("✅ Login Successful!");
+         localStorage.setItem("user", JSON.stringify(res.data.user));
+        alert("Login Successful!");
         navigate("/dashboard");
       } else {
         alert("❌ No token received from server!");
