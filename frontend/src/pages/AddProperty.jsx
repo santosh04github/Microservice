@@ -4,53 +4,53 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Sidebar from "../components/Sidebar";
 
-
 const AddProperty = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     area: "",
     details: "",
     price: "",
-    image: null,
+    photo: "", // base64 string
   });
 
-  // handle input change
+  // handle image change → convert to base64
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm({ ...form, photo: reader.result });
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (files) {
-      setForm({ ...form, image: files[0] });
-    } else {
-      setForm({ ...form, [name]: value });
-    }
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formData = new FormData();
-    formData.append("area", form.area);
-    formData.append("details", form.details);
-    formData.append("price", form.price);
-    formData.append("image", form.image);
-
     try {
-      await axios.post("http://localhost:5000/api/properties", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await axios.post("http://localhost:5000/api/properties/add", {
+        area: form.area,
+        details: form.details,
+        price: form.price,
+        photo: form.photo, // send base64 string
       });
+      console.log("Property Added:", response.data);
       alert("✅ Property added successfully!");
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
-      alert("❌ Failed to add property");
+      console.error("Failed to add property:", err.response?.data || err.message);
+      alert("Failed to add property");
     }
   };
 
   return (
     <div className="dashboard-container">
-      {/* Sidebar */}
-     <Sidebar />
+      <Sidebar />
 
-      {/* Main Content */}
       <div className="main-content">
         <div className="navbar">
           <h3>Add New Property</h3>
@@ -58,9 +58,9 @@ const AddProperty = () => {
         </div>
 
         <div className="content">
-          <form onSubmit={handleSubmit} encType="multipart/form-data">
+          <form onSubmit={handleSubmit}>
             <div className="input-group">
-              <label>Area (Primary Key)</label>
+              <label>Area</label>
               <input
                 type="text"
                 name="area"
@@ -99,9 +99,8 @@ const AddProperty = () => {
               <label>Upload Photo</label>
               <input
                 type="file"
-                name="image"
                 accept="image/*"
-                onChange={handleChange}
+                onChange={handleFileChange}
                 required
               />
             </div>
