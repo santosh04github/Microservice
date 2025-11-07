@@ -60,4 +60,16 @@ export const loginUser = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: "Server error in loginUser" });
   }
+
+  
 };
+
+export const logoutUser = (req, res) => {
+    req.session.destroy(err => {
+        if(err) return res.status(500).json({ error: "Logout failed" });
+        res.clearCookie("connect.sid"); // clear session cookie
+        res.json({ message: "Logged out successfully" });
+    });
+};
+
+

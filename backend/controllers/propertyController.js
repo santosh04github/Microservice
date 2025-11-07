@@ -1,19 +1,15 @@
 import { addProperty as addPropertyModel, getProperties as getPropertiesModel, getPropertyById as getPropertyByIdModel } from "../models/Property.js";
 
-import fs from "fs";
-import path from "path";
+import s3 from "../config/s3.js";
+import { v4 as uuidv4 } from "uuid";
+// import addProperty from "../models/Property.js"; 
 
 export const addProperty = async (req, res) => {
   try {
-    console.log("=== Request received ===");
-    console.log("Request headers:", req.headers);
-
-    // Log the entire body
-    console.log("Request body:", req.body);
-
     const { area, details, price, photo } = req.body;
 
-    let photoName = null;
+    let photoUrl = null;
+
     if (photo) {
       // Decode base64
       const matches = photo.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
@@ -21,26 +17,40 @@ export const addProperty = async (req, res) => {
         return res.status(400).json({ error: "Invalid base64 string" });
       }
 
-      const imageBuffer = Buffer.from(matches[2], "base64");
-      photoName = Date.now() + ".png";
+      const buffer = Buffer.from(matches[2], "base64");
+      const fileName = uuidv4() + ".png"; // unique file name
 
-      // Save locally (optional) or upload to S3
-      const filePath = path.join("uploads", photoName);
-      fs.writeFileSync(filePath, imageBuffer);
-      console.log("Saved photo as:", filePath);
+      // Upload to S3
+      const params = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: fileName,
+        Body: buffer,
+        ContentEncoding: "base64",
+        ContentType: "image/png",
+      };
+
+      const uploadResult = await s3.upload(params).promise();
+      console.log("File uploaded to S3:", uploadResult.Location);
+
+      photoUrl = uploadResult.Location; // store this URL in DB
     }
 
-    // Save to DB only photo name
+    // Save property to DB
     const result = await addPropertyModel({
       area,
       details,
       price,
-      photo: photoName
+      photo: photoUrl
     });
 
-    res.json({ message: "Property added successfully", propertyId: result.insertId, photoName });
+    res.json({
+      message: "Property added successfully",
+      propertyId: result.insertId,
+      photo: photoUrl
+    });
+
   } catch (err) {
-    console.error("Add Property Base64 Error:", err);
+    console.error("Add Property Error:", err);
     res.status(500).json({ error: err.message });
   }
 };

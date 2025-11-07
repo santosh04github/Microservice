@@ -17,16 +17,17 @@ app.use(express.json());
 let db;
 const startServer = async () => {
   try {
-    db = await connectDB(); // ✅ Wait until MySQL connection is ready
-    global.db = db; // optional: allows using db globally
-
+    db = await connectDB(); 
+    global.db = db;
 
     await connectDB();
 
-// ✅ Routes
     // app.use("/api/auth", authRoutes);
-  app.use(express.json({ limit: "10mb" })); // for base64 images
-app.use("/api/properties", propertyRoutes);
+  app.use(express.json({ limit: "10mb" })); 
+  console.log("Express JSON middleware loaded");
+    app.use("/api/properties", propertyRoutes);
+    console.log("Property routes loaded");
+
     app.get("/api/test", (req, res) => {
     res.json({ message: "✅ API working fine!" });
     });
